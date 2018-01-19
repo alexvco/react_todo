@@ -31,6 +31,7 @@
               this.state = 
                 {
                   text: '',
+                  isEdit: 0,
                   todos: [
                     {
                       id: 1,
@@ -71,13 +72,29 @@
               )
             };
 
+            handleTodoEdit(edittodo) {
+              // console.log(edittodo.name);
+              this.setState({
+                text: edittodo.name,
+                isEdit: edittodo.id
+              })
+            };
+
+            handleChangeText(targetvalue){
+              this.setState(
+                {
+                  text: targetvalue
+                }
+              )
+            };
+
 
             render() {
               return(
                 <div>
                   {/* If you dont bind(this), then this will refer to TodoForm component in the handleTodoAdd function instead of App component*/}
-                  <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} />
-                  <TodoList mytodos={this.state.todos} onDelete={this.handleTodoDelete.bind(this)} />
+                  <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} thisText={this.state.text} changeText={this.handleChangeText.bind(this)} />
+                  <TodoList mytodos={this.state.todos} onDelete={this.handleTodoDelete.bind(this)} onEdit={this.handleTodoEdit.bind(this)} />
                 </div>
               );
             };
@@ -87,8 +104,8 @@
 
 
         class TodoForm extends React.Component {
-            handleChange() {
-              console.log('Changing');
+            handleChange(e) {
+              this.props.changeText(e.target.value)
             };
 
             handleSubmit(e) {
@@ -112,7 +129,7 @@
                   <form onSubmit={this.handleSubmit.bind(this)}>
                     <div className="form-group">
                       <label>Todo name</label>
-                      <input type="text" ref="texto" className="form-control" onChange={this.handleChange} />
+                      <input type="text" ref="texto" className="form-control" value={this.props.thisText} onChange={this.handleChange.bind(this)} />
                       {/* No submit button - Press enter to submit */}
                     </div>
                   </form>
@@ -125,9 +142,12 @@
 
 
         class TodoList extends React.Component {
-            
             onTodoDelete(removetodo) {
               this.props.onDelete(removetodo);
+            };
+
+            editTodo(edittodo){
+              this.props.onEdit(edittodo);
             };
 
             render() {
@@ -136,7 +156,10 @@
                 {
                   this.props.mytodos.map(todo => 
                     {
-                      return <li itodo={todo} key={todo.id}>{todo.name} <a href="#" onClick={this.onTodoDelete.bind(this, todo)}>x</a></li>
+                      return <li itodo={todo} key={todo.id}>
+                                <span onClick={this.editTodo.bind(this, todo)}>{todo.name}</span>
+                                <a href="#" onClick={this.onTodoDelete.bind(this, todo)}> x</a>
+                              </li>
                     }
                   )
                 }
