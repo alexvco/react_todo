@@ -59,12 +59,25 @@
               );
             };
 
+            handleTodoDelete(removetodo) {
+              var todos = this.state.todos;
+              for(var i=0; i<todos.length; i++){
+                if(todos[i].id == removetodo.id){
+                  todos.splice(i, 1);
+                }
+              }
+              this.setState(
+                {todos: todos}
+              )
+            };
+
+
             render() {
               return(
                 <div>
                   {/* If you dont bind(this), then this will refer to TodoForm component in the handleTodoAdd function instead of App component*/}
                   <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} />
-                  <TodoList mytodos={this.state.todos} />
+                  <TodoList mytodos={this.state.todos} onDelete={this.handleTodoDelete.bind(this)} />
                 </div>
               );
             };
@@ -112,13 +125,18 @@
 
 
         class TodoList extends React.Component {
+            
+            onTodoDelete(removetodo) {
+              this.props.onDelete(removetodo);
+            };
+
             render() {
               return(
                <ul>
                 {
                   this.props.mytodos.map(todo => 
                     {
-                      return <li itodo={todo} key={todo.id}>{todo.name}</li>
+                      return <li itodo={todo} key={todo.id}>{todo.name} <a href="#" onClick={this.onTodoDelete.bind(this, todo)}>x</a></li>
                     }
                   )
                 }
