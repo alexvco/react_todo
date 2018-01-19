@@ -25,72 +25,110 @@
 
 
     <script type="text/babel">
-      class App extends React.Component {
-          constructor(props) {
-            super(props);
-            this.state = 
-              {
-                text: '',
-                todos: [
-                  {
-                    id: 1,
-                    name: 'Meeting At Work'
-                  },
-                  {
-                    id: 2,
-                    name: 'Make breakfast'
-                  },
-                  {
-                    id: 3,
-                    name: 'Food shopping'
-                  }
-                ]
+        class App extends React.Component {
+            constructor(props) {
+              super(props);
+              this.state = 
+                {
+                  text: '',
+                  todos: [
+                    {
+                      id: 1,
+                      name: 'Meeting At Work'
+                    },
+                    {
+                      id: 2,
+                      name: 'Make breakfast'
+                    },
+                    {
+                      id: 3,
+                      name: 'Food shopping'
+                    }
+                  ]
+                }
+            };
+
+            handleTodoAdd(newtodo) {
+              var newTodo = {
+                id: this.state.todos.length + 1,
+                name: newtodo
               }
-          };
 
-          render() {
-            return(
-              <div>
-                <TodoForm />
-                <TodoList mytodos={this.state.todos} />
-              </div>
-            );
-          };
-      };
+              this.setState(
+                {todos: this.state.todos.concat(newTodo)}
+              );
+            };
+
+            render() {
+              return(
+                <div>
+                  <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} />
+                  <TodoList mytodos={this.state.todos} />
+                </div>
+              );
+            };
+        };
       
 
 
 
-      class TodoForm extends React.Component {
-          render() {
-            return(
-              <div>
-                <h1>TodoForm</h1>
-              </div>
-            );
-          };
-      };
-      
+        class TodoForm extends React.Component {
+            handleChange() {
+              console.log('Changing');
+            };
 
-
-
-      class TodoList extends React.Component {
-          render() {
-            return(
-             <ul>
-              {
-                this.props.mytodos.map(todo => 
-                  {
-                    return <li itodo={todo} key={todo.id}>{todo.name}</li>
-                  }
-                )
+            handleSubmit(e) {
+              e.preventDefault();
+              var mytext = this.refs.texto.value.trim();
+              // validation for non-empty text
+              if (!mytext) {
+                alert('Please enter a todo');
+                return;
               }
-             </ul>
-            );
-          };
-      };
-      
-      ReactDOM.render(<App />, document.getElementById('root'));
+
+              // we are passing mytext from TodoForm component(child) to App component(parent)
+              this.props.onTodoAdd(mytext);
+              // reset the value
+              this.refs.texto.value = ''
+            };
+
+            render() {
+              return(
+                <div>
+                  <form onSubmit={this.handleSubmit.bind(this)}>
+                    <div className="form-group">
+                      <label>Todo name</label>
+                      <input type="text" ref="texto" className="form-control" onChange={this.handleChange} />
+                      {/* No submit button - Press enter to submit */}
+                    </div>
+                  </form>
+                </div>
+              );
+            };
+        };
+        
+
+
+
+        class TodoList extends React.Component {
+            render() {
+              return(
+               <ul>
+                {
+                  this.props.mytodos.map(todo => 
+                    {
+                      return <li itodo={todo} key={todo.id}>{todo.name}</li>
+                    }
+                  )
+                }
+               </ul>
+              );
+            };
+        };
+
+
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 
   </body>
