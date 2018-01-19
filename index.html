@@ -56,7 +56,11 @@
               }
 
               this.setState(
-                {todos: this.state.todos.concat(newTodo)}
+                {
+                  todos: this.state.todos.concat(newTodo),
+                  text: '',
+                  isEdit: 0
+                }
               );
             };
 
@@ -88,12 +92,29 @@
               )
             };
 
+            handleTodoUpdate(todoupdate) {
+              var todos = this.state.todos;
+              for(var i=0; i<todos.length; i++){
+                if(todos[i].id == todoupdate.id){
+                  todos.splice(i, 1);
+                }
+              }
+              todos.push(todoupdate);
+              this.setState(
+                {
+                  todos: todos,
+                  text: '',
+                  isEdit: 0
+                }
+              )
+            };
+
 
             render() {
               return(
                 <div>
                   {/* If you dont bind(this), then this will refer to TodoForm component in the handleTodoAdd function instead of App component*/}
-                  <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} thisText={this.state.text} changeText={this.handleChangeText.bind(this)} />
+                  <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} thisText={this.state.text} thisEdit={this.state.isEdit} changeText={this.handleChangeText.bind(this)} onTodoUpdate={this.handleTodoUpdate.bind(this)} />
                   <TodoList mytodos={this.state.todos} onDelete={this.handleTodoDelete.bind(this)} onEdit={this.handleTodoEdit.bind(this)} />
                 </div>
               );
@@ -117,10 +138,20 @@
                 return;
               }
 
-              // we are passing mytext from TodoForm component(child) to App component(parent)
-              this.props.onTodoAdd(mytext);
-              // reset the value
-              this.refs.texto.value = ''
+              if(this.props.thisEdit > 0) {
+                var updatedTodo = {
+                  id: this.props.thisEdit,
+                  name: mytext
+                }
+
+                this.props.onTodoUpdate(updatedTodo);
+              } else {
+                // we are passing mytext from TodoForm component(child) to App component(parent)
+                this.props.onTodoAdd(mytext);
+                // reset the value
+                this.refs.texto.value = ''
+              }
+
             };
 
             render() {
