@@ -62,6 +62,7 @@
             render() {
               return(
                 <div>
+                  {/* If you dont bind(this), then this will refer to TodoForm component in the handleTodoAdd function instead of App component*/}
                   <TodoForm onTodoAdd={this.handleTodoAdd.bind(this)} />
                   <TodoList mytodos={this.state.todos} />
                 </div>
